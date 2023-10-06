@@ -1,9 +1,0 @@
-html, body {
-    padding: 50px;
-    margin: 0;
-    box-sizing: border-box;
-}
-
-canvas {
-    border: 1px solid black;
-}
