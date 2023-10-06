@@ -15,7 +15,7 @@ const init = () => {
   });
   setInterval(() => {
     draw();
-  }, 10);
+  }, 30);
   //   window.requestAnimationFrame(draw);
 };
 
@@ -28,8 +28,6 @@ const draw = () => {
     alert("brack contextu");
     throw new Error("No canvas available");
   }
-
-  //   console.log(mouseX);
 
   if (mouseX > 100 + padding + padding / 2) {
     mouseX = 100 + padding + padding / 2;
@@ -44,9 +42,6 @@ const draw = () => {
 
   ctx.fillStyle = "black";
   ctx.fillRect(mouseX - padding - 50 / 2, 140, 50, 10);
-
-  // console.log(paddlePos[0], paddlePos[1], ballX);
-  console.log(paddlePos[1], ballX);
 
   if ((ballX < paddlePos[0] - 9 || ballX > paddlePos[1] - 9) && ballY >= 130) {
     if (ballY >= 140) {
