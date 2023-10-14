@@ -8,6 +8,7 @@ let vectorX = 1;
 let vectorY = 1;
 
 let paddlePos: [number, number] = [0, 0];
+let blockPos: [number, number] = [20, 20];
 
 const init = () => {
   document.addEventListener("mousemove", (event) => {
@@ -21,6 +22,14 @@ const init = () => {
 
 const draw = () => {
   const canvas = document.getElementById("canvas") as HTMLCanvasElement;
+  const ballDiv = document.getElementById("ball") as HTMLCanvasElement;
+  const mouseDiv = document.getElementById("mouse") as HTMLCanvasElement;
+  ballDiv.innerHTML = `X: ${ballX} Y: ${ballY}`;
+  mouseDiv.innerHTML = `X: ${mouseX}`;
+
+  ballX = Math.floor(ballX);
+  ballY = Math.floor(ballY);
+
   const ctx = canvas.getContext("2d");
   ctx?.clearRect(0, 0, 150, 150);
 
@@ -28,6 +37,13 @@ const draw = () => {
     alert("brack contextu");
     throw new Error("No canvas available");
   }
+
+  ctx.fillStyle = "red";
+  ctx.fillRect(blockPos[0], blockPos[1], 20, 20);
+
+  // if (ballX < blockPos[0] - 9 || ballX > blockPos[1] - 9) {
+  //   // alert("kolizja");
+  // }
 
   if (mouseX > 100 + padding + padding / 2) {
     mouseX = 100 + padding + padding / 2;
