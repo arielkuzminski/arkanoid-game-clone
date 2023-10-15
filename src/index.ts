@@ -1,3 +1,35 @@
+class Box {
+  public positions: number[][];
+  constructor(
+    private ctx: CanvasRenderingContext2D,
+    public x: number,
+    public y: number,
+    public width: number,
+    public height: number
+  ) {
+    this.draw();
+    this.positions = this.calculatePositions();
+  }
+
+  draw() {
+    this.ctx.fillStyle = "red";
+    this.ctx.fillRect(this.x, this.y, this.width, this.height);
+  }
+
+  calculatePositions() {
+    return [
+      Array.from({ length: this.width }, (_, i) => i + this.x),
+      Array.from({ length: this.height }, (_, i) => i + this.y),
+    ];
+  }
+
+  calculateCollision(ballX: number, ballY: number) {
+    return (
+      this.positions[0].includes(ballX) && this.positions[1].includes(ballY)
+    );
+  }
+}
+
 let mouseX = 0;
 const padding = 50;
 
@@ -10,13 +42,19 @@ let vectorY = 1;
 let paddlePos: [number, number] = [0, 0];
 let blockPos: [number, number] = [20, 20];
 
+const destroyedBlocks: string[] = [];
+const initialBlocks = 2;
+let myInterval: number;
+
+const randomNumber = () => Math.floor(Math.random() * 5) - 2;
+
 const init = () => {
   document.addEventListener("mousemove", (event) => {
     mouseX = event.clientX - padding;
   });
-  setInterval(() => {
+  myInterval = setInterval(() => {
     draw();
-  }, 30);
+  }, 10);
   //   window.requestAnimationFrame(draw);
 };
 
@@ -38,12 +76,31 @@ const draw = () => {
     throw new Error("No canvas available");
   }
 
-  ctx.fillStyle = "red";
-  ctx.fillRect(blockPos[0], blockPos[1], 20, 20);
+  if (initialBlocks === destroyedBlocks.length) {
+    clearInterval(myInterval);
+    alert("Wygrałeś!");
+    window.location.reload();
+  }
 
-  // if (ballX < blockPos[0] - 9 || ballX > blockPos[1] - 9) {
-  //   // alert("kolizja");
-  // }
+  if (!destroyedBlocks.includes("box1")) {
+    const box1 = new Box(ctx, 20, 20, 20, 20);
+    const isCollision = box1.calculateCollision(ballX, ballY);
+    if (isCollision) {
+      vectorY = vectorY >= 1 ? -1 : 1;
+      vectorX = vectorX >= 1 ? -1 : 1;
+      destroyedBlocks.push("box1");
+    }
+  }
+
+  if (!destroyedBlocks.includes("box2")) {
+    const box1 = new Box(ctx, 100, 20, 20, 20);
+    const isCollision = box1.calculateCollision(ballX, ballY);
+    if (isCollision) {
+      vectorY = vectorY >= 1 ? -1 : 1;
+      vectorX = vectorX >= 1 ? -1 : 1;
+      destroyedBlocks.push("box2");
+    }
+  }
 
   if (mouseX > 100 + padding + padding / 2) {
     mouseX = 100 + padding + padding / 2;
@@ -62,7 +119,9 @@ const draw = () => {
   if ((ballX < paddlePos[0] - 9 || ballX > paddlePos[1] - 9) && ballY >= 130) {
     if (ballY >= 140) {
       vectorY = -1;
+      clearInterval(myInterval);
       alert("game over");
+      window.location.reload();
     }
   } else {
     if (ballY >= 140 - 10) {
@@ -71,11 +130,15 @@ const draw = () => {
   }
 
   if (ballX >= 150 - 10) {
-    vectorX = -2.5;
+    vectorX = -1;
+    ballX = ballX + randomNumber();
+    ballY = ballY + randomNumber();
   }
 
   if (ballX <= 0) {
-    vectorX = 2;
+    vectorX = 1;
+    ballX = ballX + randomNumber();
+    ballY = ballY + randomNumber();
   }
 
   ballX = ballX + vectorX;
