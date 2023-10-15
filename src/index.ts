@@ -30,6 +30,9 @@ class Box {
   }
 }
 
+const canvasWidth = 640;
+const canvasHeight = 480;
+
 let mouseX = 0;
 const padding = 50;
 
@@ -62,14 +65,16 @@ const draw = () => {
   const canvas = document.getElementById("canvas") as HTMLCanvasElement;
   const ballDiv = document.getElementById("ball") as HTMLCanvasElement;
   const mouseDiv = document.getElementById("mouse") as HTMLCanvasElement;
+  const canDiv = document.getElementById("can") as HTMLCanvasElement;
   ballDiv.innerHTML = `X: ${ballX} Y: ${ballY}`;
   mouseDiv.innerHTML = `X: ${mouseX}`;
+  canDiv.innerHTML = (mouseX - canvas.getBoundingClientRect().left).toString();
 
   ballX = Math.floor(ballX);
   ballY = Math.floor(ballY);
 
   const ctx = canvas.getContext("2d");
-  ctx?.clearRect(0, 0, 150, 150);
+  ctx?.clearRect(0, 0, canvasWidth, canvasHeight);
 
   if (!ctx) {
     alert("brack contextu");
@@ -102,8 +107,8 @@ const draw = () => {
     }
   }
 
-  if (mouseX > 100 + padding + padding / 2) {
-    mouseX = 100 + padding + padding / 2;
+  if (mouseX > canvasWidth + padding / 2) {
+    mouseX = canvasWidth + padding / 2;
   }
 
   if (mouseX < 0 + padding + padding / 2) {
@@ -114,22 +119,22 @@ const draw = () => {
   paddlePos[1] = paddlePos[0] + 50;
 
   ctx.fillStyle = "black";
-  ctx.fillRect(mouseX - padding - 50 / 2, 140, 50, 10);
+  ctx.fillRect(mouseX - padding - 50 / 2, canvasHeight - 10, 50, 10);
 
   if ((ballX < paddlePos[0] - 9 || ballX > paddlePos[1] - 9) && ballY >= 130) {
-    if (ballY >= 140) {
+    if (ballY >= canvasHeight - 10) {
       vectorY = -1;
       clearInterval(myInterval);
       alert("game over");
       window.location.reload();
     }
   } else {
-    if (ballY >= 140 - 10) {
+    if (ballY >= canvasHeight - 10 - 7.5) {
       vectorY = -1;
     }
   }
 
-  if (ballX >= 150 - 10) {
+  if (ballX >= canvasWidth - 10) {
     vectorX = -1;
     ballX = ballX + randomNumber();
     ballY = ballY + randomNumber();
