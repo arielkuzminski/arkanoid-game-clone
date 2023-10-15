@@ -2,6 +2,7 @@ class Box {
   public positions: number[][];
   constructor(
     private ctx: CanvasRenderingContext2D,
+    public id: string,
     public x: number,
     public y: number,
     public width: number,
@@ -46,6 +47,23 @@ let paddlePos: [number, number] = [0, 0];
 let blockPos: [number, number] = [20, 20];
 
 const destroyedBlocks: string[] = [];
+const canvas = document.getElementById("canvas") as HTMLCanvasElement;
+const ctx = canvas.getContext("2d");
+
+if (!ctx) {
+  alert("brack contextu");
+  throw new Error("No canvas available");
+}
+
+let blockToRender = [
+  new Box(ctx, "box1", 0, 100, 20, 20),
+  new Box(ctx, "box2", 120, 100, 20, 20),
+  new Box(ctx, "box3", 220, 100, 20, 20),
+  new Box(ctx, "box4", 320, 100, 20, 20),
+  new Box(ctx, "box5", 420, 100, 20, 20),
+  new Box(ctx, "box6", 520, 100, 20, 20),
+  new Box(ctx, "box7", 620, 100, 20, 20),
+];
 const initialBlocks = 2;
 let myInterval: number;
 
@@ -62,7 +80,6 @@ const init = () => {
 };
 
 const draw = () => {
-  const canvas = document.getElementById("canvas") as HTMLCanvasElement;
   const ballDiv = document.getElementById("ball") as HTMLCanvasElement;
   const mouseDiv = document.getElementById("mouse") as HTMLCanvasElement;
   const canDiv = document.getElementById("can") as HTMLCanvasElement;
@@ -70,42 +87,29 @@ const draw = () => {
   mouseDiv.innerHTML = `X: ${mouseX}`;
   canDiv.innerHTML = (mouseX - canvas.getBoundingClientRect().left).toString();
 
+  ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
   ballX = Math.floor(ballX);
   ballY = Math.floor(ballY);
 
-  const ctx = canvas.getContext("2d");
-  ctx?.clearRect(0, 0, canvasWidth, canvasHeight);
-
-  if (!ctx) {
-    alert("brack contextu");
-    throw new Error("No canvas available");
-  }
-
-  if (initialBlocks === destroyedBlocks.length) {
+  if (blockToRender.length === 0) {
     clearInterval(myInterval);
     alert("Wygrałeś!");
     window.location.reload();
   }
 
-  if (!destroyedBlocks.includes("box1")) {
-    const box1 = new Box(ctx, 20, 20, 20, 20);
-    const isCollision = box1.calculateCollision(ballX, ballY);
-    if (isCollision) {
-      vectorY = vectorY >= 1 ? -1 : 1;
-      vectorX = vectorX >= 1 ? -1 : 1;
-      destroyedBlocks.push("box1");
+  blockToRender.forEach((el) => {
+    el.draw();
+    if (!destroyedBlocks.includes(el.id)) {
+      const isCollision = el.calculateCollision(ballX, ballY);
+      if (isCollision) {
+        vectorY = vectorY >= 1 ? -1 : 1;
+        vectorX = vectorX >= 1 ? -1 : 1;
+        destroyedBlocks.push(el.id);
+        blockToRender = blockToRender.filter((block) => block.id !== el.id);
+      }
     }
-  }
-
-  if (!destroyedBlocks.includes("box2")) {
-    const box1 = new Box(ctx, 100, 20, 20, 20);
-    const isCollision = box1.calculateCollision(ballX, ballY);
-    if (isCollision) {
-      vectorY = vectorY >= 1 ? -1 : 1;
-      vectorX = vectorX >= 1 ? -1 : 1;
-      destroyedBlocks.push("box2");
-    }
-  }
+  });
 
   if (mouseX > canvasWidth + padding / 2) {
     mouseX = canvasWidth + padding / 2;
